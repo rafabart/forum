@@ -1,5 +1,6 @@
 package com.forum.controller
 
+import com.forum.dto.TopicoRequestDto
 import com.forum.model.Topico
 import com.forum.service.TopicoService
 import org.springframework.web.bind.annotation.*
@@ -24,7 +25,7 @@ class TopicoController(
 
 
     @PostMapping
-    fun create(@RequestBody topico: Topico): Topico {
-        return topicoService.save(topico);
+    fun create(@RequestBody topicoRequestDto: TopicoRequestDto): Topico {
+        return topicoService.save(topicoRequestDto);
     }
 }
