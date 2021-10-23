@@ -1,7 +1,7 @@
 package com.forum.service
 
 import com.forum.dto.request.UsuarioRequest
-import com.forum.mapper.UsuarioMapper
+import com.forum.mapper.impl.UsuarioMapperImpl
 import com.forum.model.Usuario
 import org.springframework.stereotype.Service
 
@@ -10,7 +10,7 @@ class AutorService(
 
     private var autores: List<Usuario> = ArrayList(),
 
-    private val usuarioMapper: UsuarioMapper
+    private val usuarioMapperImpl: UsuarioMapperImpl
 
 ) {
 
@@ -36,7 +36,7 @@ class AutorService(
         val newId = this.autores.size + 1L
 
         this.autores = this.autores.plus(
-            usuarioMapper.toEntity(usuarioRequest, newId)
+            usuarioMapperImpl.toEntity(usuarioRequest, newId)
         )
 
         return this.autores.last()

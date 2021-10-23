@@ -2,10 +2,11 @@ package com.forum.controller
 
 import com.forum.dto.request.TopicoRequest
 import com.forum.dto.response.TopicoResponse
-import com.forum.mapper.TopicoMapper
+import com.forum.mapper.impl.TopicoMapperImpl
 import com.forum.service.TopicoService
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import javax.validation.Valid
 import kotlin.streams.toList
 
 @RestController
@@ -13,7 +14,7 @@ import kotlin.streams.toList
 class TopicoController(
 
     private val topicoService: TopicoService,
-    private val topicoMapper: TopicoMapper
+    private val topicoMapperImpl: TopicoMapperImpl
 
 ) {
 
@@ -23,7 +24,7 @@ class TopicoController(
 
         return topicoService.getAll()
             .stream()
-            .map(topicoMapper::toResponse)
+            .map(topicoMapperImpl::toResponse)
             .toList()
     }
 
@@ -32,16 +33,16 @@ class TopicoController(
     fun findById(@PathVariable id: Long): TopicoResponse {
         return Optional.of(id)
             .map(topicoService::findById)
-            .map(topicoMapper::toResponse)
+            .map(topicoMapperImpl::toResponse)
             .get()
     }
 
 
     @PostMapping
-    fun create(@RequestBody topicoRequest: TopicoRequest): TopicoResponse {
+    fun create(@Valid @RequestBody topicoRequest: TopicoRequest): TopicoResponse {
         return Optional.of(topicoRequest)
             .map(topicoService::save)
-            .map(topicoMapper::toResponse)
+            .map(topicoMapperImpl::toResponse)
             .get()
     }
 }

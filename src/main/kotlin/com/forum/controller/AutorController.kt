@@ -2,7 +2,7 @@ package com.forum.controller
 
 import com.forum.dto.request.UsuarioRequest
 import com.forum.dto.response.UsuarioResponse
-import com.forum.mapper.UsuarioMapper
+import com.forum.mapper.impl.UsuarioMapperImpl
 import com.forum.service.AutorService
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -14,7 +14,7 @@ import kotlin.streams.toList
 class AutorController(
 
     private val autorService: AutorService,
-    private val usuarioMapper: UsuarioMapper
+    private val usuarioMapperImpl: UsuarioMapperImpl
 
 ) {
 
@@ -24,7 +24,7 @@ class AutorController(
 
         return this.autorService.getAll()
             .stream()
-            .map(usuarioMapper::toResponse)
+            .map(usuarioMapperImpl::toResponse)
             .toList()
     }
 
@@ -34,7 +34,7 @@ class AutorController(
 
         return Optional.of(id)
             .map(autorService::findById)
-            .map(usuarioMapper::toResponse)
+            .map(usuarioMapperImpl::toResponse)
             .get()
     }
 
@@ -44,7 +44,7 @@ class AutorController(
 
         return Optional.of(usuarioRequest)
             .map(autorService::create)
-            .map(usuarioMapper::toResponse)
+            .map(usuarioMapperImpl::toResponse)
             .get()
     }
 }

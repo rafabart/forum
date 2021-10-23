@@ -1,7 +1,7 @@
 package com.forum.service
 
 import com.forum.dto.request.TopicoRequest
-import com.forum.mapper.TopicoMapper
+import com.forum.mapper.impl.TopicoMapperImpl
 import com.forum.model.Topico
 import org.springframework.stereotype.Service
 
@@ -10,9 +10,7 @@ class TopicoService(
 
     private var topicos: List<Topico> = ArrayList(),
 
-    private val cursoService: CursoService,
-    private val autorService: AutorService,
-    private val topicoMapper: TopicoMapper
+    private val topicoMapperImpl: TopicoMapperImpl
 
 ) {
 
@@ -37,12 +35,7 @@ class TopicoService(
 
         val newId = this.topicos.size + 1L
 
-        val topico = topicoMapper.toEntity(
-            topicoRequest,
-            cursoService.findById(topicoRequest.idCurso),
-            autorService.findById(topicoRequest.idAutor),
-            newId
-        )
+        val topico = topicoMapperImpl.toEntity(topicoRequest, newId)
 
         this.topicos = this.topicos.plus(topico)
         return this.topicos.last()
