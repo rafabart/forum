@@ -1,13 +1,16 @@
 package com.forum.service
 
-import com.forum.dto.UsuarioRequestDto
+import com.forum.dto.request.UsuarioRequest
+import com.forum.mapper.UsuarioMapper
 import com.forum.model.Usuario
 import org.springframework.stereotype.Service
 
 @Service
 class AutorService(
 
-    private var autores: List<Usuario> = ArrayList()
+    private var autores: List<Usuario> = ArrayList(),
+
+    private val usuarioMapper: UsuarioMapper
 
 ) {
 
@@ -24,18 +27,16 @@ class AutorService(
                 usuario.id == id
             }
             .findFirst()
-            .orElseGet { throw RuntimeException("Usuario não encontrado") }
+            .orElseGet { throw RuntimeException("Usuário não encontrado. Id = $id") }
     }
 
 
-    fun create(usuarioRequestDto: UsuarioRequestDto): Usuario {
+    fun create(usuarioRequest: UsuarioRequest): Usuario {
+
+        val newId = this.autores.size + 1L
 
         this.autores = this.autores.plus(
-            Usuario(
-                id = this.autores.size + 1L,
-                nome = usuarioRequestDto.nome,
-                email = usuarioRequestDto.email
-            )
+            usuarioMapper.toEntity(usuarioRequest, newId)
         )
 
         return this.autores.last()

@@ -1,13 +1,17 @@
 package com.forum.service
 
-import com.forum.dto.CursoRequestDto
+import com.forum.dto.request.CursoRequest
+import com.forum.dto.response.CursoResponse
+import com.forum.mapper.Mapper
 import com.forum.model.Curso
 import org.springframework.stereotype.Service
 
 @Service
 class CursoService(
 
-    private var cursos: List<Curso> = ArrayList()
+    private var cursos: List<Curso> = ArrayList(),
+
+    private val cursoMapperImpl: Mapper<CursoRequest, Curso, CursoResponse>
 
 ) {
 
@@ -24,18 +28,16 @@ class CursoService(
                 curso.id == id
             }
             .findFirst()
-            .orElseGet { throw RuntimeException("Curso não encontrado") }
+            .orElseGet { throw RuntimeException("Curso não encontrado. Id = $id") }
     }
 
 
-    fun create(cursoRequestDto: CursoRequestDto): Curso {
+    fun create(cursoRequest: CursoRequest): Curso {
+
+        val newId = this.cursos.size + 1L
 
         this.cursos = this.cursos.plus(
-            Curso(
-                id = this.cursos.size + 1L,
-                nome = cursoRequestDto.nome,
-                categoria = cursoRequestDto.categoria
-            )
+            cursoMapperImpl.toEntity(cursoRequest, newId)
         )
 
         return this.cursos.last()

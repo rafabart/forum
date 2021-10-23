@@ -1,6 +1,6 @@
-package com.forum.dto
+package com.forum.dto.request
 
-class TopicoRequestDto(
+data class TopicoRequest(
 
     val titulo: String,
     val mensagem: String,

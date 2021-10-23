@@ -1,6 +1,7 @@
 package com.forum.service
 
-import com.forum.dto.TopicoRequestDto
+import com.forum.dto.request.TopicoRequest
+import com.forum.mapper.TopicoMapper
 import com.forum.model.Topico
 import org.springframework.stereotype.Service
 
@@ -10,7 +11,8 @@ class TopicoService(
     private var topicos: List<Topico> = ArrayList(),
 
     private val cursoService: CursoService,
-    private val autorService: AutorService
+    private val autorService: AutorService,
+    private val topicoMapper: TopicoMapper
 
 ) {
 
@@ -27,18 +29,19 @@ class TopicoService(
                 topico.id == id
             }
             .findFirst()
-            .orElseGet { throw RuntimeException("Tópico não encontrado") }
+            .orElseGet { throw RuntimeException("Tópico não encontrado. Id = $id") }
     }
 
 
-    fun save(topicoRequestDto: TopicoRequestDto): Topico {
+    fun save(topicoRequest: TopicoRequest): Topico {
 
-        val topico = Topico(
-            id = topicos.size + 1L,
-            titulo = topicoRequestDto.titulo,
-            mensagem = topicoRequestDto.mensagem,
-            curso = cursoService.findById(topicoRequestDto.idCurso),
-            autor = autorService.findById(topicoRequestDto.idAutor)
+        val newId = this.topicos.size + 1L
+
+        val topico = topicoMapper.toEntity(
+            topicoRequest,
+            cursoService.findById(topicoRequest.idCurso),
+            autorService.findById(topicoRequest.idAutor),
+            newId
         )
 
         this.topicos = this.topicos.plus(topico)
