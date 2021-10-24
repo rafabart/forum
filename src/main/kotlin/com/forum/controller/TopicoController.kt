@@ -1,6 +1,7 @@
 package com.forum.controller
 
 import com.forum.dto.request.TopicoRequest
+import com.forum.dto.request.TopicoRequestUpdate
 import com.forum.dto.response.TopicoResponse
 import com.forum.mapper.impl.TopicoMapperImpl
 import com.forum.service.TopicoService
@@ -45,4 +46,25 @@ class TopicoController(
             .map(topicoMapperImpl::toResponse)
             .get()
     }
+
+
+    @DeleteMapping("{id}")
+    fun delete(@PathVariable id: Long) {
+        Optional.of(id)
+            .map(topicoService::deleteById)
+    }
+
+
+    @PutMapping("{id}")
+    fun update(
+        @PathVariable id: Long,
+        @Valid @RequestBody topicoRequestUpdate: TopicoRequestUpdate
+    ): TopicoResponse {
+
+        return Optional.of(topicoRequestUpdate)
+            .map { this.topicoService.update(id, topicoRequestUpdate) }
+            .map(topicoMapperImpl::toResponse)
+            .get()
+    }
+
 }

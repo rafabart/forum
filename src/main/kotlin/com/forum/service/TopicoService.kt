@@ -1,9 +1,11 @@
 package com.forum.service
 
 import com.forum.dto.request.TopicoRequest
+import com.forum.dto.request.TopicoRequestUpdate
 import com.forum.mapper.impl.TopicoMapperImpl
 import com.forum.model.Topico
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class TopicoService(
@@ -38,6 +40,29 @@ class TopicoService(
         val topico = topicoMapperImpl.toEntity(topicoRequest, newId)
 
         this.topicos = this.topicos.plus(topico)
+        return this.topicos.last()
+    }
+
+
+    fun deleteById(id: Long) {
+
+        this.topicos = Optional.of(id)
+            .map(this::findById)
+            .map(topicos::minus)
+            .get()
+    }
+
+
+    fun update(id: Long, topicoRequestUpdate: TopicoRequestUpdate): Topico {
+
+        val topicoToUpdate = this.findById(id)
+
+        this.topicos = Optional.of(id)
+            .map { this.deleteById(id) }
+            .map { this.topicoMapperImpl.toEntityFromUpdate(topicoToUpdate, topicoRequestUpdate) }
+            .map(topicos::plus)
+            .get()
+
         return this.topicos.last()
     }
 
