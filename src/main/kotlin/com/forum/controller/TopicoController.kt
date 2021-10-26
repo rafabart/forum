@@ -5,7 +5,10 @@ import com.forum.dto.request.TopicoRequestUpdate
 import com.forum.dto.response.TopicoResponse
 import com.forum.mapper.impl.TopicoMapperImpl
 import com.forum.service.TopicoService
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.util.*
 import javax.validation.Valid
 import kotlin.streams.toList
@@ -40,15 +43,18 @@ class TopicoController(
 
 
     @PostMapping
-    fun create(@Valid @RequestBody topicoRequest: TopicoRequest): TopicoResponse {
+    @ResponseStatus(HttpStatus.CREATED)
+    fun create(@Valid @RequestBody topicoRequest: TopicoRequest): ResponseEntity<TopicoResponse> {
         return Optional.of(topicoRequest)
             .map(topicoService::save)
             .map(topicoMapperImpl::toResponse)
+            .map(this::getUri)
             .get()
     }
 
 
     @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun delete(@PathVariable id: Long) {
         Optional.of(id)
             .map(topicoService::deleteById)
@@ -65,6 +71,17 @@ class TopicoController(
             .map { this.topicoService.update(id, topicoRequestUpdate) }
             .map(topicoMapperImpl::toResponse)
             .get()
+    }
+
+
+    private fun getUri(topicoResponse: TopicoResponse): ResponseEntity<TopicoResponse> {
+
+        var uri = ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(topicoResponse.id)
+            .toUri();
+
+        return ResponseEntity.created(uri).body(topicoResponse);
     }
 
 }

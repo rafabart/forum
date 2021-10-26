@@ -2,6 +2,7 @@ package com.forum.service
 
 import com.forum.dto.request.TopicoRequest
 import com.forum.dto.request.TopicoRequestUpdate
+import com.forum.exception.NotFoundException
 import com.forum.mapper.impl.TopicoMapperImpl
 import com.forum.model.Topico
 import org.springframework.stereotype.Service
@@ -29,7 +30,8 @@ class TopicoService(
                 topico.id == id
             }
             .findFirst()
-            .orElseGet { throw RuntimeException("Tópico não encontrado. Id = $id") }
+            .orElseThrow { NotFoundException("Tópico não encontrado. Id = $id") }
+//            .orElseGet { throw RuntimeException("Tópico não encontrado. Id = $id") }
     }
 
 
