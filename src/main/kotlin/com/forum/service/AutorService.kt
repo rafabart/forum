@@ -3,12 +3,15 @@ package com.forum.service
 import com.forum.dto.request.UsuarioRequest
 import com.forum.mapper.impl.UsuarioMapperImpl
 import com.forum.model.Usuario
+import com.forum.repository.UsuarioRepository
 import org.springframework.stereotype.Service
+import java.util.*
+import javax.transaction.Transactional
 
 @Service
 class AutorService(
 
-    private var autores: List<Usuario> = ArrayList(),
+    private var usuarioRepository: UsuarioRepository,
 
     private val usuarioMapperImpl: UsuarioMapperImpl
 
@@ -16,29 +19,24 @@ class AutorService(
 
 
     fun getAll(): List<Usuario> {
-        return this.autores
+        return this.usuarioRepository.findAll()
     }
 
 
     fun findById(id: Long): Usuario {
 
-        return this.autores.stream()
-            .filter { usuario ->
-                usuario.id == id
-            }
-            .findFirst()
+        return this.usuarioRepository
+            .findById(id)
             .orElseGet { throw RuntimeException("Usuário não encontrado. Id = $id") }
     }
 
 
+    @Transactional
     fun create(usuarioRequest: UsuarioRequest): Usuario {
 
-        val newId = this.autores.size + 1L
-
-        this.autores = this.autores.plus(
-            usuarioMapperImpl.toEntity(usuarioRequest, newId)
-        )
-
-        return this.autores.last()
+        return Optional.of(usuarioRequest)
+            .map(usuarioMapperImpl::toEntity)
+            .map(usuarioRepository::save)
+            .get()
     }
 }

@@ -30,16 +30,14 @@ class TopicoMapperImpl(
     }
 
 
-    override fun toEntity(r: TopicoRequest, id: Long): Topico {
+    override fun toEntity(r: TopicoRequest): Topico {
         return Topico(
-            id = id,
             titulo = r.titulo,
             mensagem = r.mensagem,
             curso = cursoService.findById(r.idCurso),
             autor = autorService.findById(r.idAutor)
         )
     }
-
 
 
     fun toEntityFromUpdate(e: Topico, u: TopicoRequestUpdate): Topico {

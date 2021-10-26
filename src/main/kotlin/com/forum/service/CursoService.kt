@@ -4,12 +4,15 @@ import com.forum.dto.request.CursoRequest
 import com.forum.dto.response.CursoResponse
 import com.forum.mapper.Mapper
 import com.forum.model.Curso
+import com.forum.repository.CursoRepository
 import org.springframework.stereotype.Service
+import java.util.*
+import javax.transaction.Transactional
 
 @Service
 class CursoService(
 
-    private var cursos: List<Curso> = ArrayList(),
+    private var cursoRepository: CursoRepository,
 
     private val cursoMapperImpl: Mapper<CursoRequest, Curso, CursoResponse>
 
@@ -17,30 +20,24 @@ class CursoService(
 
 
     fun getAll(): List<Curso> {
-        return this.cursos
+        return this.cursoRepository.findAll()
     }
 
 
     fun findById(id: Long): Curso {
 
-        return this.cursos.stream()
-            .filter { curso ->
-                curso.id == id
-            }
-            .findFirst()
+        return this.cursoRepository.findById(id)
             .orElseGet { throw RuntimeException("Curso não encontrado. Id = $id") }
     }
 
 
+    @Transactional
     fun create(cursoRequest: CursoRequest): Curso {
 
-        val newId = this.cursos.size + 1L
-
-        this.cursos = this.cursos.plus(
-            cursoMapperImpl.toEntity(cursoRequest, newId)
-        )
-
-        return this.cursos.last()
+        return Optional.of(cursoRequest)
+            .map(cursoMapperImpl::toEntity)
+            .map(cursoRepository::save)
+            .get()
     }
 
 }

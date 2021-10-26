@@ -20,10 +20,9 @@ class UsuarioMapperImpl : Mapper<UsuarioRequest, Usuario, UsuarioResponse> {
     }
 
 
-    override fun toEntity(r: UsuarioRequest, id: Long): Usuario {
+    override fun toEntity(r: UsuarioRequest): Usuario {
 
         return Usuario(
-            id = id,
             nome = r.nome,
             email = r.email
         )

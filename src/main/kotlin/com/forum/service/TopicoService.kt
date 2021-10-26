@@ -5,13 +5,15 @@ import com.forum.dto.request.TopicoRequestUpdate
 import com.forum.exception.NotFoundException
 import com.forum.mapper.impl.TopicoMapperImpl
 import com.forum.model.Topico
+import com.forum.repository.TopicoRepository
 import org.springframework.stereotype.Service
 import java.util.*
+import javax.transaction.Transactional
 
 @Service
 class TopicoService(
 
-    private var topicos: List<Topico> = ArrayList(),
+    private var topicoRepository: TopicoRepository,
 
     private val topicoMapperImpl: TopicoMapperImpl
 
@@ -19,53 +21,44 @@ class TopicoService(
 
 
     fun getAll(): List<Topico> {
-        return this.topicos
+        return this.topicoRepository.findAll()
     }
 
 
     fun findById(id: Long): Topico {
 
-        return this.topicos.stream()
-            .filter { topico ->
-                topico.id == id
-            }
-            .findFirst()
+        return this.topicoRepository.findById(id)
             .orElseThrow { NotFoundException("Tópico não encontrado. Id = $id") }
 //            .orElseGet { throw RuntimeException("Tópico não encontrado. Id = $id") }
     }
 
-
+    @Transactional
     fun save(topicoRequest: TopicoRequest): Topico {
 
-        val newId = this.topicos.size + 1L
-
-        val topico = topicoMapperImpl.toEntity(topicoRequest, newId)
-
-        this.topicos = this.topicos.plus(topico)
-        return this.topicos.last()
+        return Optional.of(topicoRequest)
+            .map(topicoMapperImpl::toEntity)
+            .map(topicoRepository::save)
+            .get()
     }
 
 
+    @Transactional
     fun deleteById(id: Long) {
 
-        this.topicos = Optional.of(id)
+        Optional.of(id)
             .map(this::findById)
-            .map(topicos::minus)
-            .get()
+            .map(topicoRepository::delete)
     }
 
 
+    @Transactional
     fun update(id: Long, topicoRequestUpdate: TopicoRequestUpdate): Topico {
 
-        val topicoToUpdate = this.findById(id)
-
-        this.topicos = Optional.of(id)
-            .map { this.deleteById(id) }
-            .map { this.topicoMapperImpl.toEntityFromUpdate(topicoToUpdate, topicoRequestUpdate) }
-            .map(topicos::plus)
+        return Optional.of(id)
+            .map(this::findById)
+            .map { t -> this.topicoMapperImpl.toEntityFromUpdate(t, topicoRequestUpdate) }
+            .map(topicoRepository::save)
             .get()
-
-        return this.topicos.last()
     }
 
 }

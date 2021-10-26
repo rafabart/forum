@@ -20,9 +20,8 @@ class CursoMapperImpl : Mapper<CursoRequest, Curso, CursoResponse> {
     }
 
 
-    override fun toEntity(r: CursoRequest, id: Long): Curso {
+    override fun toEntity(r: CursoRequest): Curso {
         return Curso(
-            id = id,
             nome = r.nome,
             categoria = r.categoria
         )
