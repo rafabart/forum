@@ -6,6 +6,7 @@ plugins {
 	kotlin("jvm") version "1.5.31"
 	kotlin("plugin.spring") version "1.5.31"
 	id("org.jetbrains.kotlin.plugin.noarg") version "1.5.31"
+	id("org.jetbrains.kotlin.plugin.jpa") version "1.5.31"
 }
 
 group = "com"
@@ -38,4 +39,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+noArg {
+	annotation("com.my.Annotation")
 }
