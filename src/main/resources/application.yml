@@ -1,21 +1,17 @@
 spring:
-
   datasource:
     driverClassName: org.h2.Driver
-    url: jdbc:h2:file:~/db/forum
+    url: jdbc:h2:mem:forum
+    #    url: jdbc:h2:file:~/db/forum
     username: sa
     password:
-
   jpa:
-    generate-ddl: true
-    show-sql: true
-    open-in-view: true
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
+        show_sql: true
         format_sql: true
-    hibernate:
-      ddl-auto: create-drop
 
-  h2:
-    console.enabled: true
+
+#  h2:
+#    console.enabled: true

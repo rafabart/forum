@@ -6,6 +6,10 @@ import com.forum.exception.NotFoundException
 import com.forum.mapper.impl.TopicoMapperImpl
 import com.forum.model.Topico
 import com.forum.repository.TopicoRepository
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.util.*
 import javax.transaction.Transactional
@@ -19,9 +23,14 @@ class TopicoService(
 
 ) {
 
+    @Cacheable("topicos")
+    fun getAll(nomeCurso: String?, paginacao: Pageable): Page<Topico> {
 
-    fun getAll(): List<Topico> {
-        return this.topicoRepository.findAll()
+        if (nomeCurso == null) {
+            return this.topicoRepository.findAll(paginacao)
+        }
+
+        return this.topicoRepository.findByCursoNome(nomeCurso, paginacao)
     }
 
 
@@ -32,7 +41,9 @@ class TopicoService(
 //            .orElseGet { throw RuntimeException("Tópico não encontrado. Id = $id") }
     }
 
+
     @Transactional
+    @CacheEvict(value = ["topicos"], allEntries = true)
     fun save(topicoRequest: TopicoRequest): Topico {
 
         return Optional.of(topicoRequest)
@@ -43,6 +54,7 @@ class TopicoService(
 
 
     @Transactional
+    @CacheEvict(value = ["topicos"], allEntries = true)
     fun deleteById(id: Long) {
 
         Optional.of(id)
@@ -52,6 +64,7 @@ class TopicoService(
 
 
     @Transactional
+    @CacheEvict(value = ["topicos"], allEntries = true)
     fun update(id: Long, topicoRequestUpdate: TopicoRequestUpdate): Topico {
 
         return Optional.of(id)

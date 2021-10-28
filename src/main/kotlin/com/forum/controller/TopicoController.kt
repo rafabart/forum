@@ -5,13 +5,16 @@ import com.forum.dto.request.TopicoRequestUpdate
 import com.forum.dto.response.TopicoResponse
 import com.forum.mapper.impl.TopicoMapperImpl
 import com.forum.service.TopicoService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.util.*
 import javax.validation.Valid
-import kotlin.streams.toList
 
 @RestController
 @RequestMapping("topicos")
@@ -24,12 +27,21 @@ class TopicoController(
 
 
     @GetMapping
-    fun getAll(): List<TopicoResponse> {
+    fun getAll(
+        @RequestParam(required = false) nomeCurso: String?,
+        @PageableDefault(size = 3, sort = ["id"], direction = Sort.Direction.DESC) paginacao: Pageable
+    ): Page<TopicoResponse> {
 
-        return topicoService.getAll()
-            .stream()
+        return Optional.of(paginacao)
+            .map { this.topicoService.getAll(nomeCurso, paginacao) }
+            .get()
             .map(topicoMapperImpl::toResponse)
-            .toList()
+
+
+//        val topicoList = this.topicoService.getAll(nomeCurso, paginacao)
+//
+//        return topicoList
+//            .map(topicoMapperImpl::toResponse)
     }
 
 
