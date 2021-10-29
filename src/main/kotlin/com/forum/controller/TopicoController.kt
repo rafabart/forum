@@ -2,6 +2,7 @@ package com.forum.controller
 
 import com.forum.dto.request.TopicoRequest
 import com.forum.dto.request.TopicoRequestUpdate
+import com.forum.dto.response.TopicoPorCategoriaResponse
 import com.forum.dto.response.TopicoResponse
 import com.forum.mapper.impl.TopicoMapperImpl
 import com.forum.service.TopicoService
@@ -36,12 +37,6 @@ class TopicoController(
             .map { this.topicoService.getAll(nomeCurso, paginacao) }
             .get()
             .map(topicoMapperImpl::toResponse)
-
-
-//        val topicoList = this.topicoService.getAll(nomeCurso, paginacao)
-//
-//        return topicoList
-//            .map(topicoMapperImpl::toResponse)
     }
 
 
@@ -83,6 +78,12 @@ class TopicoController(
             .map { this.topicoService.update(id, topicoRequestUpdate) }
             .map(topicoMapperImpl::toResponse)
             .get()
+    }
+
+
+    @GetMapping("relatorio")
+    fun relatorio(): List<TopicoPorCategoriaResponse> {
+        return this.topicoService.relatorio()
     }
 
 

@@ -2,6 +2,7 @@ package com.forum.service
 
 import com.forum.dto.request.TopicoRequest
 import com.forum.dto.request.TopicoRequestUpdate
+import com.forum.dto.response.TopicoPorCategoriaResponse
 import com.forum.exception.NotFoundException
 import com.forum.mapper.impl.TopicoMapperImpl
 import com.forum.model.Topico
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.util.*
+import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
 @Service
@@ -19,7 +21,11 @@ class TopicoService(
 
     private var topicoRepository: TopicoRepository,
 
-    private val topicoMapperImpl: TopicoMapperImpl
+    private val topicoMapperImpl: TopicoMapperImpl,
+
+
+    //Caso seja necessário é possível injetar o EntityManager (DAO)
+    private val entityManager: EntityManager
 
 ) {
 
@@ -72,6 +78,11 @@ class TopicoService(
             .map { t -> this.topicoMapperImpl.toEntityFromUpdate(t, topicoRequestUpdate) }
             .map(topicoRepository::save)
             .get()
+    }
+
+
+    fun relatorio(): List<TopicoPorCategoriaResponse> {
+        return this.topicoRepository.relatorio()
     }
 
 }
